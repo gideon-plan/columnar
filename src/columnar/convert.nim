@@ -3,7 +3,11 @@
 {.experimental: "strict_funcs".}
 
 import std/[strutils, tables]
-import lattice, schema, arrow
+
+type
+  ColumnarError* = object of CatchableError
+
+import basis/code/choice, schema, arrow
 
 proc to_table*(rb: RecordBatch): seq[Table[string, string]] =
   ## Convert a record batch to a sequence of string-valued row tables.
@@ -30,7 +34,7 @@ proc to_table*(rb: RecordBatch): seq[Table[string, string]] =
     result.add(t)
 
 proc from_table*(s: Schema, rows: seq[Table[string, string]]
-                ): Result[RecordBatch, ColumnarError] =
+                ): Choice[RecordBatch] =
   ## Convert row tables to a record batch.
   var rb = new_record_batch(s, rows.len)
   for col_idx in 0 ..< s.field_count():
@@ -42,8 +46,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
         if f.name in row:
           try: vals.add(int64(parseInt(row[f.name])))
           except ValueError:
-            return Result[RecordBatch, ColumnarError].bad(
-              ColumnarError(msg: "invalid int: " & row[f.name]))
+            return bad[RecordBatch]("columnar", "invalid int: " & row[f.name])
         else:
           vals.add(0)
       add_int_column(rb, col_idx, vals)
@@ -53,8 +56,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
         if f.name in row:
           try: vals.add(parseFloat(row[f.name]))
           except ValueError:
-            return Result[RecordBatch, ColumnarError].bad(
-              ColumnarError(msg: "invalid float: " & row[f.name]))
+            return bad[RecordBatch]("columnar", "invalid float: " & row[f.name])
         else:
           vals.add(0.0)
       add_float_column(rb, col_idx, vals)
@@ -65,4 +67,4 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
       add_str_column(rb, col_idx, vals)
     else:
       discard
-  Result[RecordBatch, ColumnarError].good(rb)
+  good(rb)
