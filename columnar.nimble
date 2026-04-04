@@ -1,6 +1,6 @@
 # Package
 version       = "0.1.0"
-author        = "Lynn Crees"
+author        = "L. C. Rees"
 description   = "Parquet/Arrow columnar I/O"
 license       = "MIT"
 srcDir        = "src"
