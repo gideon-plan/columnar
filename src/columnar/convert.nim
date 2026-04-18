@@ -15,7 +15,7 @@ proc to_table*(rb: RecordBatch): seq[Table[string, string]] =
   for row in 0 ..< rb.row_count:
     var t: Table[string, string]
     for col in 0 ..< rb.schema.field_count():
-      let ct = rb.columns[col].col_type
+      let ct = to_column_type(rb.columns[col].col_kind)
       case ct
       of ctInt8, ctInt16, ctInt32, ctInt64:
         if row < rb.columns[col].values_int.len:
@@ -39,7 +39,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
   var rb = new_record_batch(s, rows.len)
   for col_idx in 0 ..< s.field_count():
     let f = s.fields[col_idx]
-    case f.col_type
+    case to_column_type(f.col_kind)
     of ctInt8, ctInt16, ctInt32, ctInt64:
       var vals: seq[int64]
       for row in rows:

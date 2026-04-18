@@ -12,7 +12,7 @@ type
     values_float*: seq[float64]
     values_str*: seq[string]
     values_bool*: seq[bool]
-    col_type*: ColumnType
+    col_kind*: ColumnKind
 
   RecordBatch* = object
     schema*: Schema
@@ -22,7 +22,7 @@ type
 proc new_record_batch*(s: Schema, row_count: int): RecordBatch =
   var cols: seq[ColumnData]
   for f in s.fields:
-    cols.add(ColumnData(col_type: f.col_type))
+    cols.add(ColumnData(col_kind: f.col_kind))
   RecordBatch(schema: s, columns: cols, row_count: row_count)
 
 proc add_int_column*(rb: var RecordBatch, col_idx: int, values: seq[int64]) =
