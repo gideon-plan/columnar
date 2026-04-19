@@ -13,8 +13,8 @@ proc row_group_to_mutation*(delta: RowGroupDelta, ts: int64): Mutation =
   var deltas: seq[Delta] = @[]
   for col in delta.columns_changed:
     deltas.add(delta_add(col, $delta.row_group_idx))
-  var m = Mutation(parent: "", actor: "columnar", timestamp: ts,
-    plan_version: 1, space: "home", partition: pData,
+  var m = Mutation(parent: "", actor: "columnar", created: ts,
+    plan_version: 1, space: "home", partition: Partition.Data,
     entities: @[entity("parquet", delta.file_path)],
     deltas: deltas)
   stamp(m)
