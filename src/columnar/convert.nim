@@ -17,16 +17,16 @@ proc to_table*(rb: RecordBatch): seq[Table[string, string]] =
     for col in 0 ..< rb.schema.field_count():
       let ct = to_column_type(rb.columns[col].col_kind)
       case ct
-      of ctInt8, ctInt16, ctInt32, ctInt64:
+      of ColumnType.Int8, ColumnType.Int16, ColumnType.Int32, ColumnType.Int64:
         if row < rb.columns[col].values_int.len:
           t[names[col]] = $rb.columns[col].values_int[row]
-      of ctFloat32, ctFloat64:
+      of ColumnType.Float32, ColumnType.Float64:
         if row < rb.columns[col].values_float.len:
           t[names[col]] = $rb.columns[col].values_float[row]
-      of ctUtf8:
+      of ColumnType.Utf8:
         if row < rb.columns[col].values_str.len:
           t[names[col]] = rb.columns[col].values_str[row]
-      of ctBool:
+      of ColumnType.Bool:
         if row < rb.columns[col].values_bool.len:
           t[names[col]] = $rb.columns[col].values_bool[row]
       else:
@@ -40,7 +40,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
   for col_idx in 0 ..< s.field_count():
     let f = s.fields[col_idx]
     case to_column_type(f.col_kind)
-    of ctInt8, ctInt16, ctInt32, ctInt64:
+    of ColumnType.Int8, ColumnType.Int16, ColumnType.Int32, ColumnType.Int64:
       var vals: seq[int64]
       for row in rows:
         if f.name in row:
@@ -50,7 +50,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
         else:
           vals.add(0)
       add_int_column(rb, col_idx, vals)
-    of ctFloat32, ctFloat64:
+    of ColumnType.Float32, ColumnType.Float64:
       var vals: seq[float64]
       for row in rows:
         if f.name in row:
@@ -60,7 +60,7 @@ proc from_table*(s: Schema, rows: seq[Table[string, string]]
         else:
           vals.add(0.0)
       add_float_column(rb, col_idx, vals)
-    of ctUtf8:
+    of ColumnType.Utf8:
       var vals: seq[string]
       for row in rows:
         vals.add(row.getOrDefault(f.name, ""))

@@ -3,11 +3,11 @@
 {.experimental: "strict_funcs".}
 
 type
-  ColumnType* = enum
-    ctBool, ctInt8, ctInt16, ctInt32, ctInt64,
-    ctUint8, ctUint16, ctUint32, ctUint64,
-    ctFloat32, ctFloat64, ctUtf8, ctBinary,
-    ctList, ctStruct
+  ColumnType* {.pure.} = enum
+    Bool, Int8, Int16, Int32, Int64,
+    Uint8, Uint16, Uint32, Uint64,
+    Float32, Float64, Utf8, Binary,
+    List, Struct
 
   ColumnKind* = distinct string
 
@@ -25,40 +25,40 @@ proc `$`*(ck: ColumnKind): string {.borrow.}
 
 proc to_column_type*(ck: ColumnKind): ColumnType =
   case string(ck)
-  of "bool": ctBool
-  of "int8": ctInt8
-  of "int16": ctInt16
-  of "int32": ctInt32
-  of "int", "int64": ctInt64
-  of "uint8": ctUint8
-  of "uint16": ctUint16
-  of "uint32": ctUint32
-  of "uint64": ctUint64
-  of "float32": ctFloat32
-  of "float", "float64": ctFloat64
-  of "string", "utf8": ctUtf8
-  of "binary", "bytes": ctBinary
-  of "list": ctList
-  of "struct": ctStruct
-  else: ctUtf8
+  of "bool": ColumnType.Bool
+  of "int8": ColumnType.Int8
+  of "int16": ColumnType.Int16
+  of "int32": ColumnType.Int32
+  of "int", "int64": ColumnType.Int64
+  of "uint8": ColumnType.Uint8
+  of "uint16": ColumnType.Uint16
+  of "uint32": ColumnType.Uint32
+  of "uint64": ColumnType.Uint64
+  of "float32": ColumnType.Float32
+  of "float", "float64": ColumnType.Float64
+  of "string", "utf8": ColumnType.Utf8
+  of "binary", "bytes": ColumnType.Binary
+  of "list": ColumnType.List
+  of "struct": ColumnType.Struct
+  else: ColumnType.Utf8
 
 proc kind_of*(ct: ColumnType): ColumnKind =
   case ct
-  of ctBool: ColumnKind("bool")
-  of ctInt8: ColumnKind("int8")
-  of ctInt16: ColumnKind("int16")
-  of ctInt32: ColumnKind("int32")
-  of ctInt64: ColumnKind("int64")
-  of ctUint8: ColumnKind("uint8")
-  of ctUint16: ColumnKind("uint16")
-  of ctUint32: ColumnKind("uint32")
-  of ctUint64: ColumnKind("uint64")
-  of ctFloat32: ColumnKind("float32")
-  of ctFloat64: ColumnKind("float64")
-  of ctUtf8: ColumnKind("string")
-  of ctBinary: ColumnKind("binary")
-  of ctList: ColumnKind("list")
-  of ctStruct: ColumnKind("struct")
+  of ColumnType.Bool: ColumnKind("bool")
+  of ColumnType.Int8: ColumnKind("int8")
+  of ColumnType.Int16: ColumnKind("int16")
+  of ColumnType.Int32: ColumnKind("int32")
+  of ColumnType.Int64: ColumnKind("int64")
+  of ColumnType.Uint8: ColumnKind("uint8")
+  of ColumnType.Uint16: ColumnKind("uint16")
+  of ColumnType.Uint32: ColumnKind("uint32")
+  of ColumnType.Uint64: ColumnKind("uint64")
+  of ColumnType.Float32: ColumnKind("float32")
+  of ColumnType.Float64: ColumnKind("float64")
+  of ColumnType.Utf8: ColumnKind("string")
+  of ColumnType.Binary: ColumnKind("binary")
+  of ColumnType.List: ColumnKind("list")
+  of ColumnType.Struct: ColumnKind("struct")
 
 proc column*(name: string, ck: ColumnKind, nullable: bool = true): ColumnDef =
   ColumnDef(name: name, col_kind: ck, nullable: nullable)

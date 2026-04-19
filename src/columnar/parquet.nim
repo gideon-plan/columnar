@@ -7,11 +7,11 @@
 import schema
 
 type
-  Encoding* = enum
-    encPlain, encRle, encDelta, encDictionary
+  Encoding* {.pure.} = enum
+    Plain, Rle, Delta, Dictionary
 
-  CompressionCodec* = enum
-    ccNone, ccSnappy, ccGzip, ccLz4, ccZstd
+  CompressionCodec* {.pure.} = enum
+    None, Snappy, Gzip, Lz4, Zstd
 
   PageHeader* = object
     encoding*: Encoding
